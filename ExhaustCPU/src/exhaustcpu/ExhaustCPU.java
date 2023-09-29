@@ -6,9 +6,13 @@ class HelloRunner implements Runnable {
         i = 0;
         while (true) {
             System.out.println("Hello " + i);
-            if (i == 50) {
-                break;
+            try {
+                Thread.sleep(1); //the only thing added was this. the cpu usage stuck to 12% to 23%
+            } catch (InterruptedException e) {
+               System.out.println("Uh-oh, that was not good!"); //this did not appear though
             }
+            //i++; this is the only code that stopped the infinite loop. but that's not necessary
+            //after second execution, the CPU usage was not increased either way
         }
     }
 }
