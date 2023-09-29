@@ -4,7 +4,7 @@ class HelloRunner implements Runnable {
     int i;
     public void run() {
         i = 0;
-        while (true) {
+        while (true) { //this can also be implemented as a for loop also
             System.out.println("Hello " + i);
             try {
                 Thread.sleep(1); //the only thing added was this. the cpu usage stuck to 12% to 23%
