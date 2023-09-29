@@ -348,9 +348,9 @@
               <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jButton1" max="32767" attributes="0"/>
-                      <Component id="jButton2" alignment="0" max="32767" attributes="0"/>
-                      <Component id="ResetButton" alignment="0" max="32767" attributes="0"/>
+                      <Component id="StopTimerButton" max="32767" attributes="0"/>
+                      <Component id="ResumeTimerButton" alignment="0" max="32767" attributes="0"/>
+                      <Component id="ResetTimerButton" alignment="0" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -360,31 +360,34 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jButton1" min="-2" pref="51" max="-2" attributes="0"/>
+                  <Component id="StopTimerButton" min="-2" pref="51" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jButton2" min="-2" pref="47" max="-2" attributes="0"/>
+                  <Component id="ResumeTimerButton" min="-2" pref="47" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="ResetButton" max="32767" attributes="0"/>
+                  <Component id="ResetTimerButton" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JButton" name="jButton1">
+        <Component class="javax.swing.JButton" name="StopTimerButton">
           <Properties>
             <Property name="text" type="java.lang.String" value="STOP"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JButton" name="jButton2">
+        <Component class="javax.swing.JButton" name="ResumeTimerButton">
           <Properties>
             <Property name="text" type="java.lang.String" value="RESUME"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JButton" name="ResetButton">
+        <Component class="javax.swing.JButton" name="ResetTimerButton">
           <Properties>
             <Property name="text" type="java.lang.String" value="RESET"/>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="ResetTimerButtonMouseClicked"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>

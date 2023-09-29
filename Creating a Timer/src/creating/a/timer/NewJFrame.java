@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package creating.a.timer;
 
 /**
@@ -10,11 +5,23 @@ package creating.a.timer;
  * @author Jover
  */
 
-class TimeThreads {
+class GameTime implements Runnable {
     int startCountdown = 720;
-    
+    String timeFormat;
     public void run() {
-        
+        int hour, minute, second;
+        while (startCountdown >= 0) {
+            try {
+                hour = startCountdown / 3600;
+                minute = (startCountdown % 3600) / 60;
+                second = startCountdown % 60;
+                timeFormat = String.format("%02d:%02d:%02d", hour, minute, second);
+                Thread.sleep(1000);
+                this.startCountdown--;
+            } catch (InterruptedException e) {
+                System.out.println("Time error!");
+            }
+        }
     }
 }
 
@@ -53,9 +60,9 @@ public class NewJFrame extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jTextField4 = new javax.swing.JTextField();
         jPanel5 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        ResetButton = new javax.swing.JButton();
+        StopTimerButton = new javax.swing.JButton();
+        ResumeTimerButton = new javax.swing.JButton();
+        ResetTimerButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -249,11 +256,16 @@ public class NewJFrame extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jButton1.setText("STOP");
+        StopTimerButton.setText("STOP");
 
-        jButton2.setText("RESUME");
+        ResumeTimerButton.setText("RESUME");
 
-        ResetButton.setText("RESET");
+        ResetTimerButton.setText("RESET");
+        ResetTimerButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                ResetTimerButtonMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -262,20 +274,20 @@ public class NewJFrame extends javax.swing.JFrame {
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(ResetButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(StopTimerButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(ResumeTimerButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(ResetTimerButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(StopTimerButton, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(ResumeTimerButton, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(ResetButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(ResetTimerButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -367,6 +379,11 @@ public class NewJFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_Home2ButtonDecreaseMouseClicked
 
+    private void ResetTimerButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ResetTimerButtonMouseClicked
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_ResetTimerButtonMouseClicked
+
     
     /**
      * @param args the command line arguments
@@ -408,12 +425,12 @@ public class NewJFrame extends javax.swing.JFrame {
     private javax.swing.JButton Home1ButtonIncrease;
     private javax.swing.JButton Home2ButtonDecrease;
     private javax.swing.JTextField HomeDisplay;
-    private javax.swing.JButton ResetButton;
+    private javax.swing.JButton ResetTimerButton;
+    private javax.swing.JButton ResumeTimerButton;
+    private javax.swing.JButton StopTimerButton;
     private javax.swing.JButton Visitor1ButtonIncrement;
     private javax.swing.JButton Visitor2ButtonDecrement;
     private javax.swing.JTextField VisitorDisplay;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
