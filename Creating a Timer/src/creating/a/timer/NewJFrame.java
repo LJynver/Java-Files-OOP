@@ -1,27 +1,45 @@
 package creating.a.timer;
 
+import javax.swing.SwingUtilities;
+
 /**
  *
  * @author Jover
  */
 
-class GameTime implements Runnable {
+class TimeCount implements Runnable {
     int startCountdown = 720;
-    String timeFormat;
+    private boolean timeRun = true;
+    int hour, minute, second;
+    
     public void run() {
-        int hour, minute, second;
         while (startCountdown >= 0) {
-            try {
+            if (timeRun) {
                 hour = startCountdown / 3600;
                 minute = (startCountdown % 3600) / 60;
                 second = startCountdown % 60;
-                timeFormat = String.format("%02d:%02d:%02d", hour, minute, second);
-                Thread.sleep(1000);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    System.out.println("Time error!");
+                }
                 this.startCountdown--;
-            } catch (InterruptedException e) {
-                System.out.println("Time error!");
+            } else {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    System.out.println("Time error!");
+                }
             }
         }
+    }
+    
+    public void stopTimer() {
+        timeRun = false;
+    }
+    
+    public void resumeTimer() {
+        timeRun = true;
     }
 }
 
@@ -207,7 +225,7 @@ public class NewJFrame extends javax.swing.JFrame {
 
         GameTimer1.setFont(new java.awt.Font("Tahoma", 0, 48)); // NOI18N
         GameTimer1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        GameTimer1.setText("00:00");
+        GameTimer1.setText("00:00:00");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -257,6 +275,11 @@ public class NewJFrame extends javax.swing.JFrame {
         );
 
         StopTimerButton.setText("STOP");
+        StopTimerButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                StopTimerButtonMouseClicked(evt);
+            }
+        });
 
         ResumeTimerButton.setText("RESUME");
 
@@ -378,11 +401,41 @@ public class NewJFrame extends javax.swing.JFrame {
             HomeDisplay.setText(String.valueOf(value));
         }
     }//GEN-LAST:event_Home2ButtonDecreaseMouseClicked
-
+    
+    private volatile boolean running = true;
+    
     private void ResetTimerButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ResetTimerButtonMouseClicked
         // TODO add your handling code here:
-        
+        running = false;
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                running = true;
+                TimeCount timer = new TimeCount();
+                Thread timeThread = new Thread(timer);
+                timeThread.start();
+
+                while (running && timer.second >= 0) {
+                    try {
+                        SwingUtilities.invokeLater(new Runnable () {
+                            public void run() {
+                                GameTimer1.setText(String.format("%02d:%02d:%02d\n", timer.hour, timer.minute, timer.second));
+                            }
+                        });
+                        Thread.sleep(1000);
+                    } catch (Exception e) {
+                        System.out.println("Time Display gone wrong!");
+                    }
+                }
+            }
+        });
+        thread.start();
     }//GEN-LAST:event_ResetTimerButtonMouseClicked
+
+    private void StopTimerButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_StopTimerButtonMouseClicked
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_StopTimerButtonMouseClicked
 
     
     /**
