@@ -383,6 +383,9 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="RESUME"/>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="ResumeTimerButtonMouseClicked"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="ResetTimerButton">
           <Properties>
