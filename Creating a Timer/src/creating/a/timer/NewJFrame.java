@@ -12,30 +12,23 @@ class TimeCount implements Runnable {
     boolean timerState;
     int hour, minute, second;
     
-    public TimeCount() { //constructor to set it to 
+    public TimeCount() { //constructor to set it to default
         this.startCountdown = 720;
         this.timerState = true;
         countTheTime();
     }
     
+    @Override
     public void run() {
-        while (startCountdown >= 0) {
-            if (timerState) {
-                try {
-                    countTheTime();
-                    System.out.println("Counted!");
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    System.out.println("Time error!");
-                }
-                this.startCountdown--;
-            } else {
-                try {
-                    Thread.sleep(1000);
-                    System.out.println("On hold!");
-                } catch (InterruptedException e) {
-                    System.out.println("Something went wrong!");
-                }
+        while (this.timerState) {
+            System.out.println("On state!");
+            try {
+                countTheTime();
+                Thread.sleep(1000);
+                startCountdown--;
+            } catch (InterruptedException e) {
+                System.out.println("On pause!");
+                e.printStackTrace();
             }
         }
     }
@@ -424,46 +417,32 @@ public class NewJFrame extends javax.swing.JFrame {
             HomeDisplay.setText(String.valueOf(value));
         }
     }//GEN-LAST:event_Home2ButtonDecreaseMouseClicked
-    
+
     TimeCount timer = new TimeCount();
     
-    private void testDisplay() {
+    private void displayTime() {
         Thread thread = new Thread(new Runnable() {
             public void run() {
-                Thread timeThread = new Thread(timer);
-                timeThread.start();
+                Thread threadTime = new Thread(timer);
+                threadTime.start();
                 
-                while (timer.second >= 0) {
-                    if (timer.timerState) {
-                        try {
-                            GameTimer1.setText(String.format("%02d:%02d:%02d\n", timer.hour, timer.minute, timer.second));
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            System.out.println("Something went wrong!");
-                        }
-                    } else {
-                        System.out.println("TimerState was paused!");
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            System.out.println("I was supposed to sleep");
-                        }
+                while(timer.timerState) {
+                    try {
+                        GameTimer1.setText(String.format("%02d:%02d:%02d\n", timer.hour, timer.minute, timer.second));
+                        Thread.sleep(1000);
+                    } catch (Exception e) {
+                        System.out.println("Someting happened in the format wrong!");
                     }
                 }
             }
         });
         thread.start();
-        
-        if (!timer.timerState) {
-            Thread.interrupted();
-        }
-        
     }
     
     private void ResetTimerButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ResetTimerButtonMouseClicked
         // TODO add your handling code here:
         timer.resetTimer();
-        testDisplay();
+        displayTime();
     }//GEN-LAST:event_ResetTimerButtonMouseClicked
 
     private void StopTimerButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_StopTimerButtonMouseClicked
