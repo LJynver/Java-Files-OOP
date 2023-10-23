@@ -1,0 +1,2 @@
+hashreversal.HashReversal
+hashReversal.ReverseHash
