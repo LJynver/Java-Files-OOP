@@ -2,69 +2,82 @@ package md5dehashing;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Md5dehashing {
-    private static final String CHARSET = "abcdefghijklmnopqrstuvwxyz";
-    private static final String TARGET_HASH = "5d41402abc4b2a76b9719d911017c592";
-    private static AtomicBoolean MATCH_FOUND = new AtomicBoolean(false);
+    private static final String CHARACTERS = "abcdefghijklmnopqrstuvwxyz";
+    private static final String TARGET_HASH = "2433f6a533fb465ef55f459b4a89c68a";
+    private static final int MAX_STRING_LENGTH = 8;
+    private static final int NUM_THREADS = 26;
+    private static final int[] indexes = {0, -1, -1, -1, -1, -1, -1, -1, -1};
+    private static int length = 1;
+    private static final int charArrSize = CHARACTERS.length();
 
-    public static void main(String[] args) throws NoSuchAlgorithmException {
-        ExecutorService executor = Executors.newFixedThreadPool(4);
+    public static void main(String[] args) throws InterruptedException {
+        Thread[] threads = new Thread[NUM_THREADS];
 
-        for (int length = 1; length <= CHARSET.length(); length++) {
-            char[] password = new char[length];
-            if (bruteForce(password, 0, length, executor)) {
-                break;
-            }
+        for (int i = 0; i < NUM_THREADS; i++) {
+            threads[i] = new StringGeneratorThread();
+            threads[i].start();
         }
 
-        executor.shutdown();
-
-        if (!MATCH_FOUND.get()) {
-            System.out.println("The MD5 cannot be dehashed.");
+        for (int i = 0; i < NUM_THREADS; i++) {
+            threads[i].join();
         }
     }
 
-    public static String getMd5(String input) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("MD5");
-        byte[] messageDigest = md.digest(input.getBytes());
-        StringBuilder sb = new StringBuilder();
-        for (byte b : messageDigest) {
-            sb.append(String.format("%02x", b & 0xff));
-        }
-        return sb.toString();
-    }
-
-    private static boolean bruteForce(char[] password, int position, int length, ExecutorService executor) {
-        if (MATCH_FOUND.get()) {
-            return true;
-        }
-
-        if (position == length) {
-            String candidate = new String(password);
+    private static class StringGeneratorThread extends Thread {
+        @Override
+        public void run() {
             try {
-                String hash = getMd5(candidate);
-                if (hash.equals(TARGET_HASH)) {
-                    MATCH_FOUND.set(true);
-                    System.out.println("The dehashed MD5: " + candidate);
-                    return true;
+                String randomString;
+                String randomHash;
+
+                do {
+                    randomString = generateString();
+                    randomHash = calculateMD5(randomString);
+                } while (!randomHash.equals(TARGET_HASH));
+
+                if (randomHash.equals(TARGET_HASH)) {
+                    System.out.println("The dehashed MD5: " + randomString);
                 }
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
             }
-            return false;
+        }
+    }
+
+    private static String generateString() {
+        StringBuilder stringBuilder = new StringBuilder(length);
+
+        for (int i = 0; indexes[i] != -1; i++) {
+            char charAtIndex = CHARACTERS.charAt(indexes[i] % charArrSize);
+            stringBuilder.append(charAtIndex);
         }
 
-        for (int i = 0; i < CHARSET.length(); i++) {
-            password[position] = CHARSET.charAt(i);
-            if (bruteForce(password, position + 1, length, executor)) {
-                return true;
+        indexes[0]++;
+        for (int i = 0; i < indexes.length - 1; i++) {
+            if (indexes[i] >= charArrSize) {
+                indexes[i] = 0;
+                indexes[i + 1]++;
+                if (length < i + 1) {
+                    length++;
+                }
             }
         }
 
-        return false;
+        return stringBuilder.toString();
+    }
+
+    private static String calculateMD5(String input) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        md.update(input.getBytes());
+        byte[] hashBytes = md.digest();
+
+        StringBuilder hash = new StringBuilder();
+        for (byte hashByte : hashBytes) {
+            hash.append(String.format("%02x", hashByte));
+        }
+
+        return hash.toString();
     }
 }
