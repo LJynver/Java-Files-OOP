@@ -2,55 +2,40 @@ package creating.a.timer;
 
 import javax.swing.SwingUtilities;
 
-/**
- *
- * @author Jover
- */
 
-class TimeCount implements Runnable {
-    int startCountdown;
-    boolean timerState;
-    int hour, minute, second;
+class Time implements Runnable {
+    int h,m,s, secondStart;
+    boolean runClock;
     
-    public TimeCount() { //constructor to set it to default
-        this.startCountdown = 720;
-        this.timerState = true;
-        countTheTime();
+    public Time() {
+        this.secondStart = 720;
+        this.runClock = true;
     }
     
     @Override
     public void run() {
-        while (this.timerState) {
-            System.out.println("On state!");
+        while (runClock) {
+            calculateTime(secondStart);
+            System.out.print(String.format("%02d:%02d:%02d\n", this.h, this.m, this.s));
             try {
-                countTheTime();
                 Thread.sleep(1000);
-                startCountdown--;
-            } catch (InterruptedException e) {
-                System.out.println("On pause!");
-                e.printStackTrace();
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
             }
+            secondStart--;
         }
+        return;
     }
     
-    public void countTheTime() {
-        this.hour = startCountdown / 3600;
-        this.minute = (startCountdown % 3600) / 60;
-        this.second = startCountdown % 60;
+    public void calculateTime(int second) {
+        this.h = second / 3600;
+        this.m = (second % 3600) / 60;
+        this.s = second % 60;
     }
     
-    public void resetTimer() {
-        this.timerState = false;
-        this.startCountdown = 720;
-        this.timerState = true;
-    }
-    
-    public void stopTimer() {
-        this.timerState = false;
-    }
-    
-    public void resumeTimer() {
-        this.timerState = true;
+    public void pauseTime() throws InterruptedException {
+        this.runClock = false;
+        Thread.sleep(100);
     }
 }
 
@@ -418,41 +403,17 @@ public class NewJFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_Home2ButtonDecreaseMouseClicked
 
-    TimeCount timer = new TimeCount();
-    
-    private void displayTime() {
-        Thread thread = new Thread(new Runnable() {
-            public void run() {
-                Thread threadTime = new Thread(timer);
-                threadTime.start();
-                
-                while(timer.timerState) {
-                    try {
-                        GameTimer1.setText(String.format("%02d:%02d:%02d\n", timer.hour, timer.minute, timer.second));
-                        Thread.sleep(1000);
-                    } catch (Exception e) {
-                        System.out.println("Someting happened in the format wrong!");
-                    }
-                }
-            }
-        });
-        thread.start();
-    }
     
     private void ResetTimerButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ResetTimerButtonMouseClicked
         // TODO add your handling code here:
-        timer.resetTimer();
-        displayTime();
     }//GEN-LAST:event_ResetTimerButtonMouseClicked
 
     private void StopTimerButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_StopTimerButtonMouseClicked
         // TODO add your handling code here:
-        timer.stopTimer();
     }//GEN-LAST:event_StopTimerButtonMouseClicked
 
     private void ResumeTimerButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ResumeTimerButtonMouseClicked
         // TODO add your handling code here:
-        timer.resumeTimer();
     }//GEN-LAST:event_ResumeTimerButtonMouseClicked
 
     
