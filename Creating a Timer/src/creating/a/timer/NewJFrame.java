@@ -1,51 +1,53 @@
 package creating.a.timer;
 
-import javax.swing.SwingUtilities;
-
-
-class Time implements Runnable {
-    int h,m,s, secondStart;
-    boolean runClock;
-    
-    public Time() {
-        this.secondStart = 720;
-        this.runClock = true;
-    }
-    
-    @Override
-    public void run() {
-        while (runClock) {
-            calculateTime(secondStart);
-            System.out.print(String.format("%02d:%02d:%02d\n", this.h, this.m, this.s));
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
-            }
-            secondStart--;
-        }
-        return;
-    }
-    
-    public void calculateTime(int second) {
-        this.h = second / 3600;
-        this.m = (second % 3600) / 60;
-        this.s = second % 60;
-    }
-    
-    public void pauseTime() throws InterruptedException {
-        this.runClock = false;
-        Thread.sleep(100);
-    }
-}
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class NewJFrame extends javax.swing.JFrame {
-
+    
+    private int remTime = 720;
+    private boolean isRunning = false;
+    private volatile boolean isPaused = false;
+    
     /**
      * Creates new form NewJFrame
      */
     public NewJFrame() {
+        
         initComponents();
+       
+        GAME_TIMER_CLOCK.setText(calculateTime(remTime));
+        
+        startCurrentTime();
+    }
+    
+    private String calculateTime(int remTime) {
+        int h = remTime / 3600;
+        int m = (remTime % 3600) / 60;
+        int s = remTime % 60;
+        
+        return String.format("%02d:02d:02d", h,m,s);
+    }
+    
+    private void startCurrentTime() {
+        Thread currTime = new Thread(()-> {
+            while (true) {
+                try {
+                    Thread.sleep(1000);
+                    setCurrentTime();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        currTime.setDaemon(true);
+        currTime.start();
+    }
+    
+    private void setCurrentTime() {
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
+        String currTime = sdf.format(new Date());
+        ACTUAL_TIMER_CLOCK.setText(currTime);
     }
 
     /**
@@ -68,11 +70,11 @@ public class NewJFrame extends javax.swing.JFrame {
         Visitor2ButtonDecrement = new javax.swing.JButton();
         VisitorDisplay = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
-        GameTimer1 = new javax.swing.JTextField();
+        GAME_TIMER = new javax.swing.JLabel();
+        GAME_TIMER_CLOCK = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
-        jLabel4 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
+        ACTUAL_TIMER = new javax.swing.JLabel();
+        ACTUAL_TIMER_CLOCK = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         StopTimerButton = new javax.swing.JButton();
         ResumeTimerButton = new javax.swing.JButton();
@@ -216,12 +218,13 @@ public class NewJFrame extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 48)); // NOI18N
-        jLabel3.setText("GAME TIMER");
+        GAME_TIMER.setFont(new java.awt.Font("Tahoma", 1, 48)); // NOI18N
+        GAME_TIMER.setText("GAME TIMER");
 
-        GameTimer1.setFont(new java.awt.Font("Tahoma", 0, 48)); // NOI18N
-        GameTimer1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        GameTimer1.setText("00:00:00");
+        GAME_TIMER_CLOCK.setBackground(new java.awt.Color(30, 35, 30));
+        GAME_TIMER_CLOCK.setFont(new java.awt.Font("Segoe UI", 0, 50)); // NOI18N
+        GAME_TIMER_CLOCK.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        GAME_TIMER_CLOCK.setText("00:00:00");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -229,26 +232,29 @@ public class NewJFrame extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(GAME_TIMER, javax.swing.GroupLayout.DEFAULT_SIZE, 334, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
-                .addComponent(GameTimer1, javax.swing.GroupLayout.PREFERRED_SIZE, 566, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(GAME_TIMER_CLOCK, javax.swing.GroupLayout.PREFERRED_SIZE, 560, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(GameTimer1))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(GAME_TIMER, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(GAME_TIMER_CLOCK, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
-        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 48)); // NOI18N
-        jLabel4.setText("ACTUAL TIMER");
+        ACTUAL_TIMER.setFont(new java.awt.Font("Tahoma", 0, 48)); // NOI18N
+        ACTUAL_TIMER.setText("ACTUAL TIMER");
 
-        jTextField4.setFont(new java.awt.Font("Tahoma", 0, 48)); // NOI18N
-        jTextField4.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jTextField4.setText("00:00");
+        ACTUAL_TIMER_CLOCK.setBackground(new java.awt.Color(30, 35, 30));
+        ACTUAL_TIMER_CLOCK.setFont(new java.awt.Font("Segoe UI", 0, 50)); // NOI18N
+        ACTUAL_TIMER_CLOCK.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        ACTUAL_TIMER_CLOCK.setText("00:00:00");
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -256,18 +262,19 @@ public class NewJFrame extends javax.swing.JFrame {
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel4)
-                .addGap(28, 28, 28)
-                .addComponent(jTextField4, javax.swing.GroupLayout.DEFAULT_SIZE, 566, Short.MAX_VALUE))
+                .addComponent(ACTUAL_TIMER)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(ACTUAL_TIMER_CLOCK, javax.swing.GroupLayout.PREFERRED_SIZE, 560, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField4))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(ACTUAL_TIMER_CLOCK, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(ACTUAL_TIMER, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(8, Short.MAX_VALUE))
         );
 
         StopTimerButton.setText("STOP");
@@ -349,12 +356,14 @@ public class NewJFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(16, Short.MAX_VALUE))
+                .addContainerGap(15, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    
+    
     private void Home1ButtonIncreaseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Home1ButtonIncreaseActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_Home1ButtonIncreaseActionPerformed
@@ -406,6 +415,7 @@ public class NewJFrame extends javax.swing.JFrame {
     
     private void ResetTimerButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ResetTimerButtonMouseClicked
         // TODO add your handling code here:
+        
     }//GEN-LAST:event_ResetTimerButtonMouseClicked
 
     private void StopTimerButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_StopTimerButtonMouseClicked
@@ -450,10 +460,14 @@ public class NewJFrame extends javax.swing.JFrame {
                 new NewJFrame().setVisible(true);
             }
         });
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField GameTimer1;
+    private javax.swing.JLabel ACTUAL_TIMER;
+    private javax.swing.JLabel ACTUAL_TIMER_CLOCK;
+    private javax.swing.JLabel GAME_TIMER;
+    private javax.swing.JLabel GAME_TIMER_CLOCK;
     private javax.swing.JButton Home1ButtonIncrease;
     private javax.swing.JButton Home2ButtonDecrease;
     private javax.swing.JTextField HomeDisplay;
@@ -465,13 +479,11 @@ public class NewJFrame extends javax.swing.JFrame {
     private javax.swing.JTextField VisitorDisplay;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
-    private javax.swing.JTextField jTextField4;
     // End of variables declaration//GEN-END:variables
+
 }
