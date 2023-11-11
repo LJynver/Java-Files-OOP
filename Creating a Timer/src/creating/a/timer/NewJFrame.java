@@ -2,20 +2,24 @@ package creating.a.timer;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class NewJFrame extends javax.swing.JFrame {
     
     private int remTime = 720;
     private boolean isRunning = false;
+    private boolean isPaused = false;
     
     /**
      * Creates new form NewJFrame
      */
     public NewJFrame() {
-        
         initComponents();
        
         GAME_TIMER_CLOCK.setText(calculateTime(remTime));
+        
+        startRemTime();
         
         startCurrentTime();
     }
@@ -26,6 +30,26 @@ public class NewJFrame extends javax.swing.JFrame {
         int s = remTime % 60;
         
         return String.format("%02d:%02d:%02d", h,m,s);
+    }
+    
+    private void startRemTime() {
+        if (!isRunning) {
+            isRunning = true;
+            Thread time = new Thread(() -> {
+                while (remTime > 0) {
+                    try {
+                        Thread.sleep(1000);
+                        if (!isPaused) {
+                            GAME_TIMER_CLOCK.setText(calculateTime(--remTime));
+                        }
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+                isRunning = false;
+            });
+            time.start();
+        }
     }
     
     private void startCurrentTime() {
@@ -413,15 +437,25 @@ public class NewJFrame extends javax.swing.JFrame {
     
     private void ResetTimerButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ResetTimerButtonMouseClicked
         // TODO add your handling code here:
-        
+        isPaused = true;
+        try {
+            remTime = 720;
+            GAME_TIMER_CLOCK.setText(calculateTime(remTime));
+            Thread.sleep(100);
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+        isPaused = false;
     }//GEN-LAST:event_ResetTimerButtonMouseClicked
 
     private void StopTimerButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_StopTimerButtonMouseClicked
         // TODO add your handling code here:
+        isPaused = true;
     }//GEN-LAST:event_StopTimerButtonMouseClicked
 
     private void ResumeTimerButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ResumeTimerButtonMouseClicked
         // TODO add your handling code here:
+        isPaused = false;
     }//GEN-LAST:event_ResumeTimerButtonMouseClicked
 
     
