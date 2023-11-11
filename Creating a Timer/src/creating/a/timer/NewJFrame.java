@@ -7,7 +7,6 @@ public class NewJFrame extends javax.swing.JFrame {
     
     private int remTime = 720;
     private boolean isRunning = false;
-    private volatile boolean isPaused = false;
     
     /**
      * Creates new form NewJFrame
@@ -26,12 +25,12 @@ public class NewJFrame extends javax.swing.JFrame {
         int m = (remTime % 3600) / 60;
         int s = remTime % 60;
         
-        return String.format("%02d:02d:02d", h,m,s);
+        return String.format("%02d:%02d:%02d", h,m,s);
     }
     
     private void startCurrentTime() {
         Thread currTime = new Thread(()-> {
-            while (true) {
+            while (true) { //it loops forever since we do not need to pause it
                 try {
                     Thread.sleep(1000);
                     setCurrentTime();
@@ -40,7 +39,7 @@ public class NewJFrame extends javax.swing.JFrame {
                 }
             }
         });
-        currTime.setDaemon(true);
+        currTime.setDaemon(true); //enables it as daemon thread to keep it as a background thread
         currTime.start();
     }
     
@@ -363,7 +362,6 @@ public class NewJFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     
-    
     private void Home1ButtonIncreaseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Home1ButtonIncreaseActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_Home1ButtonIncreaseActionPerformed
@@ -455,10 +453,9 @@ public class NewJFrame extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new NewJFrame().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            NewJFrame scrboard = new NewJFrame();
+            scrboard.setVisible(true);
         });
         
     }
